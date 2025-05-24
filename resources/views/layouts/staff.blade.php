@@ -56,7 +56,7 @@
                             <li class="dropdown-header">Surat Masuk</li>
                             @forelse ($suratBelumDiterima as $surat)
                                 <li>
-                                    <a href="{{ route('staff.dashboard') }}" class="dropdown-item">
+                                    <a href="{{ route('staff.surat-masuk') }}" class="dropdown-item">
                                         <strong>{{ $surat->nomor_surat }}</strong><br>
                                         <small>{{ $surat->perihal }}</small><br>
                                         <small class="text-muted">{{ optional($surat->klasifikasi)->nama ?? 'Klasifikasi tidak tersedia' }}</small>
@@ -66,7 +66,7 @@
                             @empty
                                 <li class="dropdown-item text-muted">Tidak ada surat baru</li>
                             @endforelse
-                            <li><a href="{{ route('staff.dashboard') }}" class="dropdown-item text-center text-primary">Lihat Semua Surat</a></li>
+                            <li><a href="{{ route('staff.surat-masuk') }}" class="dropdown-item text-center text-primary">Lihat Semua Surat</a></li>
                         </ul>
                     </li>
 
@@ -103,6 +103,12 @@
                         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
                             <li class="nav-item">
                                 <a href="{{ route('dashboard') }}" class="nav-link">
+                                    <i class="nav-icon fas fa-envelope"></i>
+                                    <p>Dashboard</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('staff.surat-masuk') }}" class="nav-link">
                                     <i class="nav-icon fas fa-envelope"></i>
                                     <p>Surat Masuk</p>
                                 </a>
@@ -182,5 +188,6 @@
     </script>
 
     @stack('scripts')
+    @yield('scripts')
 </body>
 </html>

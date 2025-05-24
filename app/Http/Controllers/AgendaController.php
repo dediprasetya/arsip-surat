@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Surat;
+use App\Models\SuratKeluar;
 use PDF;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\AgendaExport;
@@ -39,7 +40,7 @@ class AgendaController extends Controller
          ->orderBy('tanggal_surat', 'asc')
          ->get();
 
-        $pdf = PDF::loadView('agenda.pdf', compact('suratMasuk', 'bulan', 'tahun'));
+        $pdf = PDF::loadView('agenda.pdf', compact('suratMasuk', 'bulan', 'tahun'))->setPaper('A4', 'landscape');
         return $pdf->download("Agenda_Surat_Masuk_{$bulan}_{$tahun}.pdf");
     }
 
@@ -51,4 +52,49 @@ class AgendaController extends Controller
 
         return Excel::download(new AgendaExport($bulan, $tahun), 'agenda-surat.xlsx');
     }
+
+    public function suratKeluar(Request $request)
+    {
+        $query = \App\Models\SuratKeluar::with('klasifikasi.timKerja.bidang', 'user');
+
+        // Filter bulan dan tahun
+        if ($request->filled('bulan')) {
+            $query->whereMonth('tanggal_surat', $request->bulan);
+        }
+
+        if ($request->filled('tahun')) {
+            $query->whereYear('tanggal_surat', $request->tahun);
+        }
+
+        $data = $query->orderBy('tanggal_surat', 'asc')->get();
+
+        return view('agenda.surat-keluar', compact('data'));
+    }
+
+    public function exportSuratKeluarPdf(Request $request)
+    {
+        $query = \App\Models\SuratKeluar::with('klasifikasi.timKerja.bidang', 'user');
+
+        if ($request->filled('bulan')) {
+            $query->whereMonth('tanggal_surat', $request->bulan);
+        }
+
+        if ($request->filled('tahun')) {
+            $query->whereYear('tanggal_surat', $request->tahun);
+        }
+
+        $data = $query->orderBy('tanggal_surat', 'desc')->get();
+
+        $pdf = PDF::loadView('agenda.surat-keluar-pdf', compact('data'))->setPaper('A4', 'landscape');
+
+        return $pdf->download('agenda_surat_keluar.pdf');
+    }
+
+    public function exportSuratKeluarExcel(Request $request)
+    {
+        return Excel::download(new AgendaSuratKeluarExport($request->bulan, $request->tahun), 'agenda_surat_keluar.xlsx');
+    }
+
+
 }
+

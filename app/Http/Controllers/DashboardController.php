@@ -20,6 +20,8 @@ class DashboardController extends Controller
                 return redirect()->route('admin.dashboard');
             } elseif (Auth::user()->role === 'staff') {
                 return redirect()->route('staff.dashboard');
+            }elseif (Auth::user()->role === 'kepala_bidang') {
+                return redirect()->route('kepala.dashboard');
             }
         }
         return redirect('/login');
@@ -56,5 +58,18 @@ class DashboardController extends Controller
             'suratKeluarChart' => $suratKeluarChart
         ]);
     }
+    public function kepalaBidangDashboard()
+    {
+        $user = Auth::user();
+
+        // Ambil semua surat masuk yang belum didisposisi oleh kepala bidang
+        $suratMasuk = \App\Models\Surat::with('klasifikasi.timKerja')
+                        ->where('status_disposisi', 'belum')
+                        ->orderBy('tanggal_surat', 'desc')
+                        ->get();
+
+        return view('kepala.dashboard', compact('user', 'suratMasuk'));
+    }
+
 }
 

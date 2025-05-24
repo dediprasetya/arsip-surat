@@ -83,6 +83,7 @@
                         <select name="role" class="form-control">
                             <option value="admin">Admin</option>
                             <option value="staff">Staff</option>
+                            <option value="kepala_bidang">Kepala Bidang</option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -143,6 +144,7 @@
                         <select id="editRole" name="role" class="form-control">
                             <option value="admin">Admin</option>
                             <option value="staff">Staff</option>
+                            <option value="kepala_bidang">Kepala Bidang</option>
                         </select>
                     </div>
 

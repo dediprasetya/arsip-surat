@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h2 class="mb-1">Sistem Arsip Surat - BKPSDM Kabupaten Semarang</h2>
+    <h2 class="mb-1">Sistem Arsip Surat - Bidang Pengadaan dan Informasi BKPSDM Kabupaten Semarang</h2>
     <p>Selamat datang, {{ $user->name }}!</p>
 
     {{-- Statistik --}}

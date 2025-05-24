@@ -84,11 +84,29 @@
                                     <p>Surat Keluar</p>
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a href="{{ route('agenda.index') }}" class="nav-link">
-                                    <i class="nav-icon fas fa-book"></i>
-                                    <p>Buku Agenda</p>
-                                </a>
+                    
+                            <li class="nav-item has-treeview">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-book"></i>
+                                <p>
+                                Agenda Surat
+                                <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview ml-3">
+                                <li class="nav-item">
+                                    <a href="{{ route('agenda.index') }}" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Agenda Surat Masuk</p>
+                                    </a>
+                                    </li>
+                                    <li class="nav-item">
+                                    <a href="{{ route('agenda.surat.keluar') }}" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Agenda Surat Keluar</p>
+                                    </a>
+                                    </li>
+                                </ul>
                             </li>
                             <li class="nav-item">
                                 <a href="{{ route('users.index') }}" class="nav-link">
@@ -153,8 +171,9 @@
             });
         });
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     @stack('scripts')
+    @yield('scripts')
     
 </body>
 </html>

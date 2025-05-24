@@ -74,7 +74,7 @@
         </form>
     </div>
     <div class="d-flex justify-content-end mb-3">
-        <a href="#" class="btn btn-danger">
+    <a href="{{ route('surat-masuk.export.pdf', request()->query()) }}" class="btn btn-danger mb-3">
             <i class="fas fa-file-pdf"></i> Unduh PDF
         </a>
         <a href="{{ route('surat-masuk.export-excel', request()->query()) }}" class="btn btn-success mb-3">
@@ -132,7 +132,7 @@
 
             <!-- Modal Detail Surat -->
             <div class="modal fade" id="detailSuratModal{{ $s->id }}" tabindex="-1" aria-labelledby="detailSuratLabel" aria-hidden="true">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="detailSuratLabel">Detail Surat</h5>
@@ -181,7 +181,7 @@
 
                         <!-- Modal Edit Surat -->
                             <div class="modal fade" id="editSuratModal{{ $s->id }}" tabindex="-1" aria-labelledby="editSuratLabel" aria-hidden="true">
-                                <div class="modal-dialog">
+                                <div class="modal-dialog modal-lg">
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title">Edit Surat</h5>
@@ -342,12 +342,6 @@
                                         <label for="tanggal_penerimaan_surat" class="form-label">Tanggal Penerimaan</label>
                                         <input type="date" class="form-control" id="tanggal_penerimaan_surat" name="tanggal_penerimaan_surat" required>
                                     </div>
-
-                                    <div class="mb-3">
-                                        <label for="tanggal_disposisi" class="form-label">Tanggal Disposisi</label>
-                                        <input type="date" class="form-control" id="tanggal_disposisi" name="tanggal_disposisi">
-                                    </div>
-
                                     <div class="mb-3">
                                         <label for="isi_surat" class="form-label">Isi Surat</label>
                                         <textarea class="form-control" id="isi_surat" name="isi_surat" rows="3"></textarea>
@@ -367,18 +361,7 @@
                                         </select>
                                     </div>
 
-                                    <div class="mb-3">
-                                        <label for="tujuan_disposisi" class="form-label">Tujuan Disposisi</label>
-                                        <select class="form-control" id="tujuan_disposisi" name="tujuan_disposisi">
-                                            <option value="">Pilih User</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label for="isi_disposisi" class="form-label">Isi Disposisi</label>
-                                        <textarea class="form-control" id="isi_disposisi" name="isi_disposisi" rows="2"></textarea>
-                                    </div>
-
+                                    
                                     <div class="mb-3">
                                         <label for="file_surat" class="form-label">File Surat (JPG, PNG, PDF)</label>
                                         <input type="file" class="form-control" id="file_surat" name="file_surat" accept=".jpg,.jpeg,.png,.pdf">
@@ -418,30 +401,30 @@
         });
 
         /** Ambil user berdasarkan klasifikasi **/
-        $('#klasifikasi_id').on('change', function () {
-            const klasifikasiId = $(this).val();
-            const tujuanDisposisi = $('#tujuan_disposisi');
+        //$('#klasifikasi_id').on('change', function () {
+        //    const klasifikasiId = $(this).val();
+        //    const tujuanDisposisi = $('#tujuan_disposisi');
 
-            if (klasifikasiId) {
-                $.ajax({
-                    url: '/get-users-by-klasifikasi/' + klasifikasiId,
-                    type: 'GET',
-                    success: function (data) {
-                        tujuanDisposisi.empty().append('<option value="">Pilih User</option>');
-                        if (data.length > 0) {
-                            $.each(data, function (index, user) {
-                                tujuanDisposisi.append(`<option value="${user.id}">${user.name}</option>`);
-                            });
-                        }
-                    },
-                    error: function () {
-                        alert('Gagal mengambil data user.');
-                    }
-                });
-            } else {
-                tujuanDisposisi.empty().append('<option value="">Pilih User</option>');
-            }
-        });
+        //    if (klasifikasiId) {
+        //        $.ajax({
+        //            url: '/get-users-by-klasifikasi/' + klasifikasiId,
+        //            type: 'GET',
+        //            success: function (data) {
+        //                tujuanDisposisi.empty().append('<option value="">Pilih User</option>');
+        //                if (data.length > 0) {
+        //                    $.each(data, function (index, user) {
+         //                       tujuanDisposisi.append(`<option value="${user.id}">${user.name}</option>`);
+         //                   });
+        //                }
+        //            },
+        //            error: function () {
+        //                alert('Gagal mengambil data user.');
+        //            }
+        //        });
+        //    } else {
+        //        tujuanDisposisi.empty().append('<option value="">Pilih User</option>');
+        //    }
+        //});
     });
 </script>
 @endpush

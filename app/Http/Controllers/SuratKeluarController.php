@@ -179,6 +179,39 @@ class SuratKeluarController extends Controller
         return Excel::download(new SuratKeluarExport($data), 'surat_keluar.xlsx');
     }
     
+    public function setujuiSurat($id)
+    {
+        $surat = SuratKeluar::findOrFail($id);
+        $surat->status = 'disetujui';
+        $surat->tanggal_persetujuan = now();
+        $surat->save();
+
+        return redirect()->route('kepala.surat-keluar')->with('success', 'Surat berhasil disetujui.');
+    }
+
+    public function tolakSurat(Request $request, $id)
+    {
+        $request->validate([
+            'alasan_penolakan' => 'required|string',
+        ]);
+
+        $surat = SuratKeluar::findOrFail($id);
+        $surat->status = 'ditolak';
+        $surat->alasan_penolakan = $request->alasan_penolakan;
+        $surat->save();
+
+        return redirect()->route('kepala.surat-keluar')->with('error', 'Surat ditolak.');
+    }
+
+    public function kirimUlang($id)
+    {
+        $surat = SuratKeluar::findOrFail($id);
+        $surat->status = 'menunggu';
+        $surat->alasan_penolakan = null;
+        $surat->save();
+
+        return back()->with('success', 'Surat berhasil dikirim ulang.');
+    }
 
 
 

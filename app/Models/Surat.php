@@ -30,6 +30,7 @@ class Surat extends Model
         'bidang_id',
         'tim_kerja_id',
         'nomor_agenda_umum',
+
     ];
 
     public function user()
@@ -50,5 +51,10 @@ class Surat extends Model
     public function timKerja()
     {
         return $this->belongsTo(TimKerja::class,'tim_kerja_id');
+    }
+    // User kepala bidang yang memberi disposisi
+    public function pemberiDisposisi()
+    {
+        return $this->belongsTo(User::class, 'disposisi_oleh');
     }
 }

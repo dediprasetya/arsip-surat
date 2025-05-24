@@ -50,10 +50,7 @@
                 </div>
 
                 <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="tanggal_disposisi" class="form-label">Tanggal Disposisi</label>
-                        <input type="date" class="form-control" id="tanggal_disposisi" name="tanggal_disposisi">
-                    </div>
+                    
                     <div class="col-md-6">
                         <label for="status_surat" class="form-label">Status Surat</label>
                         <select class="form-control" id="status_surat" name="status_surat" required>
@@ -78,20 +75,6 @@
                     <label for="isi_surat" class="form-label">Isi Surat</label>
                     <textarea class="form-control" id="isi_surat" name="isi_surat" rows="3"></textarea>
                 </div>
-
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="tujuan_disposisi" class="form-label">Tujuan Disposisi</label>
-                        <select class="form-control" id="tujuan_disposisi" name="tujuan_disposisi">
-                            <option value="">Pilih User</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="isi_disposisi" class="form-label">Isi Disposisi</label>
-                        <textarea class="form-control" id="isi_disposisi" name="isi_disposisi" rows="2"></textarea>
-                    </div>
-                </div>
-
                 <div class="mb-3">
                     <label for="file_surat" class="form-label">File Surat (JPG, PNG, PDF)</label>
                     <input type="file" class="form-control" id="file_surat" name="file_surat" accept=".jpg,.jpeg,.png,.pdf">

@@ -39,6 +39,7 @@
             <select name="role" class="form-control">
                 <option value="admin">Admin</option>
                 <option value="staff">Staff</option>
+                <option value="kepala_bidang">kepala_bidang</option>
             </select>
         </div>
         <button type="submit" class="btn btn-success">Simpan</button>

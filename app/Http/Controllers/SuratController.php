@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use App\Exports\SuratMasukExport;
 use Maatwebsite\Excel\Facades\Excel;
+use PDF;
 
 class SuratController extends Controller
 {
@@ -76,7 +77,7 @@ class SuratController extends Controller
             $query->where('status_surat', $request->status_surat);
         }
 
-        $surat = $query->paginate(10)->withQueryString();
+        $surat = $query->orderBy('tanggal_surat', 'desc')->paginate(10)->withQueryString();
 
         return view('surat.index', compact('surat', 'klasifikasi', 'users', 'bidang', 'timkerja'))
             ->with('nomor_surat', $request->nomor_surat)
@@ -111,16 +112,19 @@ class SuratController extends Controller
             'tanggal_surat' => 'required|date',
             'perihal' => 'required|string',
             'tanggal_penerimaan_surat' => 'nullable|date',
-            'tanggal_disposisi' => 'nullable|date',
             'isi_surat' => 'required|string',
             'asal_surat' => 'nullable|string',
             'status_surat' => 'required|in:belum diterima,sudah diterima,sudah ditindaklanjuti',
-            'tujuan_disposisi' => 'nullable|exists:users,id',
-            'isi_disposisi' => 'nullable|string',
+            'status_disposisi' => 'nullable|in:belum,sudah',
             'file_surat' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
             'nomor_agenda_umum' => 'required|string|unique:surat,nomor_agenda_umum',
         ]);
 
+        // Cari kepala bidang (role: kepala_bidang)
+        $kepalaBidang = User::where('role', 'kepala_bidang')->first();
+        if (!$kepalaBidang) {
+            return redirect()->back()->with('error', 'Kepala bidang tidak ditemukan.');
+        }
         // Menyimpan file jika diunggah
         $fileName = null;
         if ($request->hasFile('file_surat')) {
@@ -134,14 +138,13 @@ class SuratController extends Controller
             'tanggal_surat' => $request->tanggal_surat,
             'perihal' => $request->perihal,
             'tanggal_penerimaan_surat' => $request->tanggal_penerimaan_surat,
-            'tanggal_disposisi' => $request->tanggal_disposisi,
             'isi_surat' => $request->isi_surat,
             'asal_surat' => $request->asal_surat,
             'status_surat' => $request->status_surat,
-            'tujuan_disposisi' => $request->tujuan_disposisi,
-            'isi_disposisi' => $request->isi_disposisi,
+            'tujuan_disposisi' => $kepalaBidang->id,
             'file_surat' => $fileName,
             'nomor_agenda_umum' => $request->nomor_agenda_umum,
+            'status_disposisi' => 'belum', // default status disposisi
         ]);
 
         return redirect()->route('surat.index')->with('success', 'Surat berhasil ditambahkan.');
@@ -328,6 +331,89 @@ class SuratController extends Controller
 
         return Excel::download(new \App\Exports\SuratMasukExport($data), 'surat-masuk.xlsx');
     }
+
+    public function exportPdf(Request $request)
+    {
+        $user = Auth::user();
+
+        $query = \App\Models\Surat::with('klasifikasi.timKerja.bidang', 'user');
+
+        // Filter berdasarkan role
+        if ($user->role !== 'admin') {
+            $query->where('tujuan_disposisi', $user->id);
+        }
+
+        // Filter pencarian berdasarkan input user
+        if ($request->filled('nomor_surat')) {
+            $query->where('nomor_surat', 'like', '%' . $request->nomor_surat . '%');
+        }
+
+        if ($request->filled('asal_surat')) {
+            $query->where('asal_surat', 'like', '%' . $request->asal_surat . '%');
+        }
+
+        if ($request->filled('perihal')) {
+            $query->where('perihal', 'like', '%' . $request->perihal . '%');
+        }
+
+        if ($request->filled('tanggal_surat')) {
+            $query->whereDate('tanggal_surat', $request->tanggal_surat);
+        }
+
+        if ($request->filled('nomor_agenda_umum')) {
+            $query->where('nomor_agenda_umum', 'like', '%' . $request->nomor_agenda_umum . '%');
+        }
+
+        if ($request->filled('klasifikasi_id')) {
+            $query->where('klasifikasi_id', $request->klasifikasi_id);
+        }
+
+        if ($request->filled('tujuan_disposisi')) {
+            $query->where('tujuan_disposisi', $request->tujuan_disposisi);
+        }
+
+        if ($request->filled('status_surat')) {
+            $query->where('status_surat', $request->status_surat);
+        }
+
+        $data = $query->get();
+
+        $pdf = Pdf::loadView('surat.cetak-pdf', compact('data'));
+
+        return $pdf->download('surat_masuk.pdf');
+
+    }
+
+    public function indexPemberiDisposisi()
+    {
+        $user = Auth::user();
+        
+        $surat = Surat::with('klasifikasi.timKerja', 'user')
+            ->whereHas('klasifikasi.timKerja.bidang', function($q) use ($user) {
+                $q->where('id_kepala_bidang', $user->id);
+            })
+            ->whereNull('status_disposisi')
+            ->get();
+
+        return view('surat.pemberi-disposisi', compact('surat'));
+    }
+
+    public function disposisiSurat(Request $request, $id)
+    {
+        $request->validate([
+            'tujuan_disposisi' => 'required|exists:users,id',
+        ]);
+
+        $surat = Surat::findOrFail($id);
+        $surat->update([
+            'tujuan_disposisi' => $request->tujuan_disposisi,
+            'disposisi_oleh' => Auth::id(),
+            'status_disposisi' => 'sudah'
+        ]);
+
+        return redirect()->back()->with('success', 'Disposisi berhasil diberikan.');
+    }
+
 
 
 
