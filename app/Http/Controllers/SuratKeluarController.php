@@ -71,7 +71,7 @@ class SuratKeluarController extends Controller
 
         SuratKeluar::create($validated);
 
-        return back()->with('success', 'Surat berhasil ditambahkan');
+        return view('surat-keluar.index')->with('success', 'Surat berhasil ditambahkan');
     }
 
 
@@ -88,6 +88,13 @@ class SuratKeluarController extends Controller
             'catatan' => 'nullable',
             'file_surat' => 'nullable|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
         ]);
+
+        // Reset status jika dikirim ulang
+        if ($request->reset_status == '1') {
+            $suratKeluar->status = 'menunggu';
+            $suratKeluar->alasan_penolakan = null;
+            $suratKeluar->tanggal_persetujuan = null;
+        }
 
         if ($request->hasFile('file_surat')) {
             // Hapus file lama (jika ada)
@@ -107,6 +114,7 @@ class SuratKeluarController extends Controller
 
         return back()->with('success', 'Surat berhasil diperbarui');
     }
+
 
 
     public function destroy(SuratKeluar $suratKeluar)
@@ -178,41 +186,6 @@ class SuratKeluarController extends Controller
 
         return Excel::download(new SuratKeluarExport($data), 'surat_keluar.xlsx');
     }
-    
-    public function setujuiSurat($id)
-    {
-        $surat = SuratKeluar::findOrFail($id);
-        $surat->status = 'disetujui';
-        $surat->tanggal_persetujuan = now();
-        $surat->save();
-
-        return redirect()->route('kepala.surat-keluar')->with('success', 'Surat berhasil disetujui.');
-    }
-
-    public function tolakSurat(Request $request, $id)
-    {
-        $request->validate([
-            'alasan_penolakan' => 'required|string',
-        ]);
-
-        $surat = SuratKeluar::findOrFail($id);
-        $surat->status = 'ditolak';
-        $surat->alasan_penolakan = $request->alasan_penolakan;
-        $surat->save();
-
-        return redirect()->route('kepala.surat-keluar')->with('error', 'Surat ditolak.');
-    }
-
-    public function kirimUlang($id)
-    {
-        $surat = SuratKeluar::findOrFail($id);
-        $surat->status = 'menunggu';
-        $surat->alasan_penolakan = null;
-        $surat->save();
-
-        return back()->with('success', 'Surat berhasil dikirim ulang.');
-    }
-
 
 
 }

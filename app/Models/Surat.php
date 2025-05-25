@@ -25,6 +25,7 @@ class Surat extends Model
         'asal_surat',
         'status_surat',
         'tujuan_disposisi',
+        'status_disposisi',
         'isi_disposisi',
         'file_surat',
         'bidang_id',

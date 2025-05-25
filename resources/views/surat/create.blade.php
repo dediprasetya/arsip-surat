@@ -102,30 +102,30 @@
             allowClear: true
         });
 
-        $('#klasifikasi_id').on('change', function () {
-            const klasifikasiId = $(this).val();
-            const tujuanDisposisi = $('#tujuan_disposisi');
+        //$('#klasifikasi_id').on('change', function () {
+        //    const klasifikasiId = $(this).val();
+        //    const tujuanDisposisi = $('#tujuan_disposisi');
 
-            if (klasifikasiId) {
-                $.ajax({
-                    url: '/get-users-by-klasifikasi/' + klasifikasiId,
-                    type: 'GET',
-                    success: function (data) {
-                        tujuanDisposisi.empty().append('<option value="">Pilih User</option>');
-                        if (data.length > 0) {
-                            $.each(data, function (index, user) {
-                                tujuanDisposisi.append(`<option value="${user.id}">${user.name}</option>`);
-                            });
-                        }
-                    },
-                    error: function () {
-                        alert('Gagal mengambil data user.');
-                    }
-                });
-            } else {
-                tujuanDisposisi.empty().append('<option value="">Pilih User</option>');
-            }
-        });
+        //    if (klasifikasiId) {
+        //        $.ajax({
+        //            url: '/get-users-by-klasifikasi/' + klasifikasiId,
+        //            type: 'GET',
+        //            success: function (data) {
+        //                tujuanDisposisi.empty().append('<option value="">Pilih User</option>');
+        //                if (data.length > 0) {
+        //                    $.each(data, function (index, user) {
+        //                        tujuanDisposisi.append(`<option value="${user.id}">${user.name}</option>`);
+        //                    });
+        //                }
+        //            },
+        //            error: function () {
+        //                alert('Gagal mengambil data user.');
+        //            }
+        //        });
+        //    } else {
+        //        tujuanDisposisi.empty().append('<option value="">Pilih User</option>');
+        //    }
+        //});
     });
 </script>
 @endpush

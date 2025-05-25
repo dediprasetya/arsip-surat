@@ -3,7 +3,7 @@
 @section('title', 'Surat Keluar')
 
 @push('styles')
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="{{ asset('plugins/select2/css/select2.min.css') }}" rel="stylesheet" />
 @endpush
 
 @section('content')
@@ -61,6 +61,7 @@
                         <th>Tujuan</th>
                         <th>Catatan</th>
                         <th>Pembuat</th>
+                        <th>Status Surat</th>
                         <th>File Surat</th>
                         <th>Aksi</th>
                     </tr>
@@ -82,6 +83,18 @@
                         <td>{{ $surat->tujuan_surat }}</td>
                         <td>{{ $surat->catatan }}</td>
                         <td>{{ $surat->user->name }}</td>
+                        <td style="min-width: 200px;">
+                            @if ($surat->status === 'disetujui')
+                                <span class="badge bg-success">Disetujui</span><br>
+                                <small>{{ \Carbon\Carbon::parse($surat->tanggal_persetujuan)->format('d-m-Y H:i') }}</small>
+                            @elseif ($surat->status === 'ditolak')
+                                <span class="badge bg-danger">Ditolak</span><br>
+                                <small><strong>Alasan:</strong> {{ $surat->alasan_penolakan }}</small><br>
+                                <small>{{ \Carbon\Carbon::parse($surat->tanggal_persetujuan)->format('d-m-Y H:i') }}</small>
+                            @else
+                                <span class="badge bg-warning text-dark">Menunggu</span>
+                            @endif
+                        </td>
                         <td>
                             @if($surat->file_surat)
                                 <a href="{{ Storage::url('surat_keluar/' . $surat->file_surat) }}" target="_blank" class="btn btn-info btn-sm">
@@ -101,6 +114,8 @@
                                 data-tujuan_surat="{{ $surat->tujuan_surat }}"
                                 data-isi_surat="{{ $surat->isi_surat }}"
                                 data-catatan="{{ $surat->catatan }}"
+                                data-status="{{ $surat->status }}"
+                                data-alasan_penolakan="{{ $surat->alasan_penolakan }}"
                                 data-bs-toggle="modal"
                                 data-bs-target="#editSuratModal">
                                 <i class="fas fa-edit"></i>
@@ -113,7 +128,6 @@
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>
-                        
                         </td>
                     </tr>
                     @empty
@@ -202,6 +216,7 @@
             </div>
             <div class="modal-body">
                 <!-- Form input surat keluar (diisi lewat JS) -->
+                <input type="hidden" name="reset_status" id="edit_reset_status" value="0">
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label>Klasifikasi Surat</label>
@@ -239,6 +254,10 @@
                         <label>Catatan</label>
                         <textarea name="catatan" id="edit_catatan" class="form-control" rows="2"></textarea>
                     </div>
+                    <div class="col-md-12 mb-3" id="alasan_penolakan_container" style="display:none;">
+                        <label class="text-danger">Alasan Penolakan</label>
+                        <div class="alert alert-danger" id="alasan_penolakan_text"></div>
+                    </div>
                     <div class="col-md-12 mb-3">
                         <label>Ganti File Surat (opsional, maksimal 2MB)</label>
                         <input type="file" name="file_surat" class="form-control" accept=".pdf,.doc,.docx,.jpg,.png,.jpeg">
@@ -250,6 +269,7 @@
                 <button type="submit" class="btn btn-primary">Update Surat</button>
             </div>
         </form>
+        
     </div>
 </div>
 
@@ -257,23 +277,57 @@
 @endsection
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="{{ asset('plugins/select2/js/select2.min.js') }}"></script>
+<script src="{{ asset('plugins/select2/js/i18n/id.js') }}"></script>
 <script>
     $(document).ready(function () {
-        $('#klasifikasi_id, #edit_klasifikasi_id').select2({
-            dropdownParent: $('#tambahSuratModal, #editSuratModal')
+        // Hanya inisialisasi select2 saat modal benar-benar terbuka
+        $('#tambahSuratModal').on('shown.bs.modal', function () {
+            $('#klasifikasi_id').select2({
+                dropdownParent: $('#tambahSuratModal'),
+                width: '100%',
+                placeholder: 'Pilih Klasifikasi'
+            });
+        });
+
+        $('#editSuratModal').on('shown.bs.modal', function () {
+            $('#edit_klasifikasi_id').select2({
+                dropdownParent: $('#editSuratModal'),
+                width: '100%',
+                placeholder: 'Pilih Klasifikasi'
+            });
+
+            // Trigger ulang change agar nilai pre-filled ter-load
+            $('#edit_klasifikasi_id').trigger('change');
         });
 
         $('.btn-edit').on('click', function () {
+            const status = $(this).data('status');
+            const alasan = $(this).data('alasan_penolakan');
+
             $('#formEditSurat').attr('action', '/surat-keluar/' + $(this).data('id'));
-            $('#edit_klasifikasi_id').val($(this).data('klasifikasi_id')).trigger('change');
+            $('#edit_klasifikasi_id').val($(this).data('klasifikasi_id'));
             $('#edit_nomor_surat').val($(this).data('nomor_surat'));
             $('#edit_tanggal_surat').val($(this).data('tanggal_surat'));
             $('#edit_perihal').val($(this).data('perihal'));
             $('#edit_tujuan_surat').val($(this).data('tujuan_surat'));
             $('#edit_isi_surat').val($(this).data('isi_surat'));
             $('#edit_catatan').val($(this).data('catatan'));
+
+            // Jika status surat adalah "ditolak", tampilkan alasan dan set reset_status
+            if (status === 'ditolak') {
+                $('#alasan_penolakan_container').show();
+                $('#alasan_penolakan_text').text(alasan);
+                $('#edit_reset_status').val(1);
+            } else {
+                $('#alasan_penolakan_container').hide();
+                $('#edit_reset_status').val(0);
+            }
+
+            // Buka modal setelah semua data dimasukkan
+            $('#editSuratModal').modal('show');
         });
     });
+
 </script>
 @endpush

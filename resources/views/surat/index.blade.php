@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @push('styles')
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="{{ asset('plugins/select2/css/select2.min.css') }}" rel="stylesheet" />
 @endpush
     
 
@@ -105,7 +105,7 @@
                 <td>{{ $s->nomor_agenda_umum }}</td>
                 <td>{{ $s->asal_surat }}</td>
                 <td>{{ $s->perihal }}</td>
-                <td>{{ $s->tujuan_disposisi ? $s->user->name : '-' }}</td>
+                <td>{{ ($s->user && $s->user->role == 'kepala_bidang') ? '-' : ($s->user->name ?? '-') }}</td>
                 <td>{{ $s->status_surat }}</td>
                 <td>
                     <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailSuratModal{{ $s->id }}">
@@ -146,7 +146,8 @@
                             <p><strong>Diterima:</strong> {{ $s->tanggal_penerimaan_surat }}</p>
                             <p><strong>Perihal:</strong> {{ $s->perihal }}</p>
                             <p><strong>Isi Surat:</strong> {{ $s->isi_surat ?? '-' }}</p>
-                            <p><strong>Status:</strong> {{ ucfirst($s->status_surat) }}</p>
+                            <p><strong>Status Surat:</strong> {{ ucfirst($s->status_surat) }}</p>
+                            <p><strong>Status Disposisi:</strong> {{ $s->status_disposisi }}</p>
                             <p><strong>Tanggal Disposisi:</strong> {{ $s->tanggal_disposisi }}</p>
                             <p><strong>Tujuan Disposisi:</strong> {{ $s->tujuan_disposisi ? $s->user->name : '-' }}</p>
                             <p><strong>Tanggal Diterima Staff:</strong> {{ $s->tanggal_diterima_staf }}</p>
@@ -250,6 +251,14 @@
                                                         <option value="belum diterima" {{ $s->status_surat == 'belum diterima' ? 'selected' : '' }}>Belum Diterima</option>
                                                         <option value="sudah diterima" {{ $s->status_surat == 'sudah diterima' ? 'selected' : '' }}>Sudah Diterima</option>
                                                         <option value="sudah ditindaklanjuti" {{ $s->status_surat == 'sudah ditindaklanjuti' ? 'selected' : '' }}>Sudah Ditindaklanjuti</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label for="status_disposisi" class="form-label">Status Disposisi</label>
+                                                    <select class="form-control" id="status_disposisi" name="status_disposisi">
+                                                        <option value="belum" {{ $s->status_disposisi == 'belum' ? 'selected' : '' }}>Belum</option>
+                                                        <option value="sudah" {{ $s->status_disposisi == 'sudah' ? 'selected' : '' }}>Sudah</option>
                                                     </select>
                                                 </div>
 
@@ -379,7 +388,8 @@
 
 @push('scripts')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="{{ asset('plugins/select2/js/select2.min.js') }}"></script>
+<script src="{{ asset('plugins/select2/js/i18n/id.js') }}"></script>
 
 <script>
     $(document).ready(function () {
@@ -392,39 +402,38 @@
             });
         });
 
-        /** Inisialisasi Select2 **/
-        const dropdownParent = $('#tambahSuratModal').length ? $('#tambahSuratModal') : $(document.body);
-        $('#klasifikasi_id').select2({
+        // Inisialisasi select2 untuk tambah dan edit
+        $('#klasifikasi_id, #edit_klasifikasi_id').select2({
             placeholder: 'Pilih Klasifikasi',
             allowClear: true,
-            dropdownParent: dropdownParent
+            dropdownParent: $('#tambahSuratModal, #editSuratModal') // optional: agar tidak tertutup modal
         });
 
-        /** Ambil user berdasarkan klasifikasi **/
-        //$('#klasifikasi_id').on('change', function () {
-        //    const klasifikasiId = $(this).val();
-        //    const tujuanDisposisi = $('#tujuan_disposisi');
+        // Hanya jalankan AJAX jika tujuan_disposisi ada (untuk tambah surat saja)
+        $('#klasifikasi_id').on('change', function () {
+            const klasifikasiId = $(this).val();
+            const tujuanDisposisi = $('#tujuan_disposisi');
 
-        //    if (klasifikasiId) {
-        //        $.ajax({
-        //            url: '/get-users-by-klasifikasi/' + klasifikasiId,
-        //            type: 'GET',
-        //            success: function (data) {
-        //                tujuanDisposisi.empty().append('<option value="">Pilih User</option>');
-        //                if (data.length > 0) {
-        //                    $.each(data, function (index, user) {
-         //                       tujuanDisposisi.append(`<option value="${user.id}">${user.name}</option>`);
-         //                   });
-        //                }
-        //            },
-        //            error: function () {
-        //                alert('Gagal mengambil data user.');
-        //            }
-        //        });
-        //    } else {
-        //        tujuanDisposisi.empty().append('<option value="">Pilih User</option>');
-        //    }
-        //});
+            if (tujuanDisposisi.length && klasifikasiId) {
+                $.ajax({
+                    url: '/get-users-by-klasifikasi/' + klasifikasiId,
+                    type: 'GET',
+                    success: function (data) {
+                        tujuanDisposisi.empty().append('<option value="">Pilih User</option>');
+                        if (data.length > 0) {
+                            $.each(data, function (index, user) {
+                                tujuanDisposisi.append(`<option value="${user.id}">${user.name}</option>`);
+                            });
+                        }
+                    },
+                    error: function () {
+                        alert('Gagal mengambil data user.');
+                    }
+                });
+            } else if (tujuanDisposisi.length) {
+                tujuanDisposisi.empty().append('<option value="">Pilih User</option>');
+            }
+        });
     });
 </script>
 @endpush

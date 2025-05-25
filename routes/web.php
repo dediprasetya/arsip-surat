@@ -30,9 +30,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('surat-keluar', SuratKeluarController::class);
     Route::get('surat-keluar/export/pdf', [SuratKeluarController::class, 'exportPdf'])->name('surat-keluar.export.pdf');
     Route::get('surat-keluar/export/excel', [SuratKeluarController::class, 'exportExcel'])->name('surat-keluar.export.excel');
-    Route::post('/surat-keluar/{id}/setujui', [SuratKeluarController::class, 'setujuiSurat'])->name('surat-keluar.setujui');
-    Route::post('/surat-keluar/{id}/tolak', [SuratKeluarController::class, 'tolakSurat'])->name('surat-keluar.tolak');
-    Route::post('/surat-keluar/{id}/kirim-ulang', [SuratKeluarController::class, 'kirimUlang'])->name('surat-keluar.kirim-ulang');
+    
 
     
     //Route::get('/surat-keluar/preview/{filename}', [SuratKeluarController::class, 'preview'])->name('surat-keluar.preview');
@@ -105,7 +103,10 @@ Route::middleware(['auth'])->group(function () {
         
         Route::get('/kepala/dashboard', [DashboardController::class, 'kepalaBidangDashboard'])->name('kepala.dashboard');
         Route::post('/kepala-bidang/disposisi', [App\Http\Controllers\DisposisiController::class, 'disposisiOlehKepala'])->name('disposisi.kepala');
-        
+        Route::get('kepala/surat-keluar', [DisposisiController::class, 'suratKeluar'])->name('kepala.surat-keluar');
+        Route::post('/kepala/surat-keluar/setujui/{id}', [DisposisiController::class, 'setujuiSuratKeluar'])->name('surat-keluar.setujui');
+        Route::post('/kepala/surat-keluar/tolak/{id}', [DisposisiController::class, 'tolakSuratKeluar'])->name('surat-keluar.tolak');     
+        Route::post('/kepala/surat-keluar/kirimulang/{id}', [DisposisiController::class, 'kirimUlang'])->name('surat-keluar.kirimUlang'); 
     });
 
 });
