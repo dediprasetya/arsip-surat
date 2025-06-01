@@ -1,4 +1,4 @@
-@extends('layouts.staff')
+@extends(auth()->user()->role == 'staff' ? 'layouts.staff' : 'layouts.kepala')
 
 @section('content')
 <div class="container">

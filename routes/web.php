@@ -30,7 +30,9 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('surat-keluar', SuratKeluarController::class);
     Route::get('surat-keluar/export/pdf', [SuratKeluarController::class, 'exportPdf'])->name('surat-keluar.export.pdf');
     Route::get('surat-keluar/export/excel', [SuratKeluarController::class, 'exportExcel'])->name('surat-keluar.export.excel');
-    
+    //route ubah password
+    Route::get('/change-password', [UserController::class, 'showChangePasswordForm'])->name('password.change');
+    Route::post('/change-password', [UserController::class, 'updatePassword'])->name('password.update');
 
     
     //Route::get('/surat-keluar/preview/{filename}', [SuratKeluarController::class, 'preview'])->name('surat-keluar.preview');
@@ -92,9 +94,6 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/staff/surat/{id}/terima', [SuratController::class, 'terimaSurat']);
         Route::post('/staff/surat/{id}/tindaklanjuti', [SuratController::class, 'tindaklanjutiSurat']);
         Route::get('/staff/surat-masuk', [StaffDashboardController::class, 'suratMasuk'])->name('staff.surat-masuk');
-        //route ubah password
-        Route::get('/change-password', [UserController::class, 'showChangePasswordForm'])->name('password.change');
-        Route::post('/change-password', [UserController::class, 'updatePassword'])->name('password.update');
         Route::get('/staff/export-excel', [StaffDashboardController::class, 'exportExcel'])->name('staff.export.excel');
         
     });

@@ -71,7 +71,7 @@ class SuratKeluarController extends Controller
 
         SuratKeluar::create($validated);
 
-        return view('surat-keluar.index')->with('success', 'Surat berhasil ditambahkan');
+        return redirect()->route('surat-keluar.index')->with('success', 'Surat berhasil ditambahkan.');
     }
 
 

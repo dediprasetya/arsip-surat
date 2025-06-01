@@ -95,6 +95,10 @@
             <!-- Sidebar -->
             <aside class="main-sidebar sidebar-dark-primary elevation-4">
                 <a href="#" class="brand-link">
+                    <img src="{{ asset('images/logo_pemkab.png') }}" 
+                        alt="Logo Kabupaten Semarang" 
+                        class="brand-image img-circle elevation-3"
+                        style="opacity: .8">
                     <span class="brand-text font-weight-light">Arsip Surat</span>
                 </a>
 
@@ -117,12 +121,6 @@
                                 <a href="{{ route('surat-keluar.index') }}" class="nav-link">
                                     <i class="nav-icon fas fa-envelope"></i>
                                     <p>Surat Keluar</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="" class="nav-link">
-                                    <i class="nav-icon fas fa-book"></i>
-                                    <p>Buku Agenda</p>
                                 </a>
                             </li>
                             <li class="nav-item">

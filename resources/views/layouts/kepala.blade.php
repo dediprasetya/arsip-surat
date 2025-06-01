@@ -49,6 +49,7 @@
 
 <!-- Sidebar -->
 <div id="sidebar" class="bg-light border-end">
+    
     <div class="text-center py-4 border-bottom">
         <h5 class="mb-0">Kepala Bidang</h5>
         <small>{{ Auth::user()->name }}</small>
@@ -63,7 +64,7 @@
             <a href="{{ route('kepala.dashboard') }}" class="sidebar-link {{ request()->is('kepala-bidang/surat-masuk*') ? 'active' : '' }}">
                 <i class="bi bi-envelope-open"></i> Surat Masuk
                 @php
-                    $jumlahSuratBelumDisposisi = \App\Models\Surat::whereNull('disposisi_oleh')->count();
+                    $jumlahSuratBelumDisposisi = \App\Models\Surat::where('status_disposisi', 'belum')->count();
                 @endphp
                 @if($jumlahSuratBelumDisposisi > 0)
                     <span class="badge bg-danger text-white badge-notif float-end">{{ $jumlahSuratBelumDisposisi }}</span>
@@ -82,6 +83,12 @@
             </a>
         </li>
         <li>
+            <a href="{{ route('password.change') }}" class="sidebar-link {{ request()->is('kepala-bidang') ? 'active' : '' }}">
+                <i class="bi bi-key"></i> Ubah Password
+            </a>
+        </li>
+        <li>    
+        <li>
             <a href="{{ route('logout') }}"
                class="sidebar-link text-danger"
                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
@@ -99,6 +106,10 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand navbar-light bg-white border-bottom px-3">
         <button class="btn btn-outline-secondary" id="sidebarToggle"><i class="bi bi-list"></i></button>
+        <img src="{{ asset('images/logo_pemkab.png') }}" 
+        alt="Logo Kabupaten Semarang" 
+        class="brand-image img-circle elevation-3"
+        style="height: 33px; width: 33px; opacity: .9">
         <span class="navbar-brand mb-0 h6 ms-3">Sistem Arsip Surat</span>
         <ul class="navbar-nav ms-auto">
             <li class="nav-item dropdown">
