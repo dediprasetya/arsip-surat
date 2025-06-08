@@ -60,15 +60,11 @@ class DashboardController extends Controller
     }
     public function kepalaBidangDashboard()
     {
-        $user = Auth::user();
+        $jumlahSuratMasuk = Surat::count();
+        $jumlahSuratKeluar = SuratKeluar::count();
+        // Tambahkan statistik lain jika perlu
 
-        // Ambil semua surat masuk yang belum didisposisi oleh kepala bidang
-        $suratMasuk = \App\Models\Surat::with('klasifikasi.timKerja')
-                        ->where('status_disposisi', 'belum')
-                        ->orderBy('tanggal_surat', 'desc')
-                        ->get();
-
-        return view('kepala.dashboard', compact('user', 'suratMasuk'));
+        return view('kepala.dashboard', compact('jumlahSuratMasuk', 'jumlahSuratKeluar'));
     }
 
 }

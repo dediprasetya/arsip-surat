@@ -44,6 +44,9 @@
             font-size: 0.8rem;
         }
     </style>
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+
 </head>
 <body>
 
@@ -61,8 +64,8 @@
             </a>
         </li>
         <li>
-            <a href="{{ route('kepala.dashboard') }}" class="sidebar-link {{ request()->is('kepala-bidang/surat-masuk*') ? 'active' : '' }}">
-                <i class="bi bi-envelope-open"></i> Surat Masuk
+            <a href="{{ route('kepala.disposisi.index') }}" class="sidebar-link {{ request()->is('kepala-bidang/surat-masuk*') ? 'active' : '' }}">
+                <i class="bi bi-envelope-open"></i> Disposisi Surat Masuk
                 @php
                     $jumlahSuratBelumDisposisi = \App\Models\Surat::where('status_disposisi', 'belum')->count();
                 @endphp
@@ -143,6 +146,11 @@
         document.getElementById('sidebar').classList.toggle('collapsed');
     });
 </script>
+
+<!-- jQuery & DataTables -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
 @stack('scripts')
 

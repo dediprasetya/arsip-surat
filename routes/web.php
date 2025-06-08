@@ -106,6 +106,10 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/kepala/surat-keluar/setujui/{id}', [DisposisiController::class, 'setujuiSuratKeluar'])->name('surat-keluar.setujui');
         Route::post('/kepala/surat-keluar/tolak/{id}', [DisposisiController::class, 'tolakSuratKeluar'])->name('surat-keluar.tolak');     
         Route::post('/kepala/surat-keluar/kirimulang/{id}', [DisposisiController::class, 'kirimUlang'])->name('surat-keluar.kirimUlang'); 
+        Route::get('/disposisi-surat-masuk', [DisposisiController::class, 'disposisiSurat'])->name('kepala.disposisi.index');
+        Route::get('/kepala/surat_masuk', [DisposisiController::class, 'semuaSuratMasuk'])->name('kepala.surat.masuk');
+        Route::get('/kepala/surat_keluar', [DisposisiController::class, 'semuaSuratKeluar'])->name('kepala.surat.keluar');
+    
     });
 
 });

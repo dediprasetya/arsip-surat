@@ -137,7 +137,7 @@
                     @endforelse
                 </tbody>
             </table>
-            {{ $suratKeluar->links() }}
+            {{ $suratKeluar->links('vendor.pagination.bootstrap-4') }}
         </div>
     </div>
 </div>

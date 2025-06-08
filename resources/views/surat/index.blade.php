@@ -299,7 +299,7 @@
 
         <!-- Pagination -->
     <div class="d-flex justify-content-center">
-        {{ $surat->links() }}
+        {{ $surat->links('vendor.pagination.bootstrap-4') }}
     </div>
 </div>
 

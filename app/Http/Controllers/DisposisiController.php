@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Surat;
 use App\Models\SuratKeluar;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class DisposisiController extends Controller
 {
@@ -81,6 +82,39 @@ class DisposisiController extends Controller
 
         return back()->with('success', 'Surat berhasil dikirim ulang.');
     }
+
+    public function dashboard()
+    {
+        $jumlahSuratMasuk = Surat::count();
+        $jumlahSuratKeluar = SuratKeluar::count();
+        // Tambahkan statistik lain jika perlu
+
+        return view('kepala.dashboard', compact('jumlahSuratMasuk', 'jumlahSuratKeluar'));
+    }
+    public function disposisiSurat()
+    {
+        $user = Auth::user();
+
+        // Ambil semua surat masuk yang belum didisposisi oleh kepala bidang
+        $suratMasuk = \App\Models\Surat::with('klasifikasi.timKerja')
+                        ->where('status_disposisi', 'belum')
+                        ->orderBy('tanggal_surat', 'desc')
+                        ->get();
+        return view('kepala.disposisi_surat', compact('user','suratMasuk'));
+    }
+
+    public function semuaSuratMasuk()
+    {
+        $surat_masuk = Surat::latest()->get();
+        return view('kepala.surat_masuk', compact('surat_masuk'));
+    }
+
+    public function semuaSuratKeluar()
+    {
+        $surat_keluar = SuratKeluar::latest()->get();
+        return view('kepala.surat_keluar', compact('surat_keluar'));
+    }
+
 
 
 }
